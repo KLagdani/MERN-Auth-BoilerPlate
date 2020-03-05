@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -11,12 +12,9 @@ const port = process.env.PORT || 80;
 //Express
 const app = express();
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "client/build")));
-
-app.use("/api/register", register);
 
 //DB
-const db = require("./config/keys").mongoURI;
+const db = process.env.MongoURI;
 mongoose
   .connect(db, {
     useUnifiedTopology: true,
@@ -27,9 +25,11 @@ mongoose
   .then(() => console.log("MongoDB connected..."))
   .catch(err => console.log(err));
 
-//Static folder set
-app.use(express.static("/client/build"));
+//Routes
+app.use("/api/register", register);
 
+//Static folder set
+app.use(express.static(path.join(__dirname, "client/build")));
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
 });

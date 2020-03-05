@@ -8,7 +8,8 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "lagdani",
   "license": "ISC",
@@ -17,6 +18,7 @@
     "body-parser": "^1.19.0",
     "concurrently": "^5.1.0",
     "create-react-app": "^3.4.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.4.0",
     "g": "^2.0.1",

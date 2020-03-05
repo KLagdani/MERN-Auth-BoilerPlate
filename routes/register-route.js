@@ -1,7 +1,7 @@
+require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user-model");
-const keys = require("../config/keys");
 const express = require("express");
 const router = express.Router();
 const {
@@ -28,7 +28,7 @@ router.post("/local", userValidationRules(), validateUser, (req, res) => {
 
   const confirmationJWT = jwt.sign(
     { username, email, confirmed: false },
-    keys.jwt.secret
+    process.env.JWT_SECRET
   );
 
   const newUser = new User({
