@@ -1,0 +1,81 @@
+.content-dash-summary {
+  margin-left: 280px;
+  padding: 20px;
+  .heading {
+    h1 {
+      color: $darker-basic;
+      font-size: 25px;
+      font-weight: 500;
+      margin-left: 20px;
+    }
+    p {
+      color: $basic-grey;
+      margin-bottom: 10px;
+    }
+  }
+
+  .dash-cards {
+    overflow: auto;
+    .dash-card {
+      background: #fff;
+      border-radius: 5px;
+      padding: 20px;
+      overflow: auto;
+      min-height: 300px;
+      .user-img {
+        text-align: center;
+      }
+      .dash-card-title {
+        text-transform: capitalize;
+        font-size: 1.6rem;
+        color: $main-color;
+        display: block;
+        text-align: center;
+        margin: 8px 0;
+      }
+      .change-title {
+        margin-bottom: 20px;
+      }
+      .total-portfolio-title {
+        display: block;
+        font-size: 0.8rem;
+        text-align: center;
+        margin: 8px 0;
+      }
+      .total-portfolio {
+        display: block;
+        text-align: center;
+      }
+      .total-portfolio-value {
+        color: $main-color;
+        font-size: 20px;
+      }
+      .total-portfolio-currency {
+        font-size: 20px;
+      }
+      .summary-change {
+        height: 20px;
+        display: inline-block;
+        width: 100%;
+        margin-bottom: 10px;
+        .summary-change-label {
+          color: $semi-grey;
+          font-size: 20px;
+        }
+        .summary-change-value {
+          text-align: right;
+          font-size: 20px;
+          &.positive {
+            color: green;
+          }
+          &.negative {
+            color: red;
+          }
+        }
+        .change-hr {
+          margin-top: 31px;
+        }
+      }
+    }
+  }
+}

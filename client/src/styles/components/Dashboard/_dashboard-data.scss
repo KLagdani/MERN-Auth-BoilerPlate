@@ -1,0 +1,22 @@
+.dashboard-data {
+  margin-left: 280px;
+  padding: 15px;
+
+  .dash-cards {
+    overflow: auto;
+    .dash-card {
+      background: #fff;
+      border-radius: 5px;
+      overflow: auto;
+      min-height: 500px;
+      padding: 20px 20px 15px 20px;
+
+      .dash-card-title {
+        font-size: 1.6rem;
+        color: $main-color;
+        display: block;
+        text-align: center;
+      }
+    }
+  }
+}

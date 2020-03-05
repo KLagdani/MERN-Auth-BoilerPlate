@@ -1,0 +1,77 @@
+@import url("https://fonts.googleapis.com/css?family=Dax:400,900");
+
+.radio-btn-mp {
+  width: 100%;
+  margin-top: 15px;
+  text-align: center;
+  h1 {
+    font-family: $font;
+    color: $white;
+  }
+  input[type="radio"] {
+    display: none;
+    &:checked {
+      + .box {
+        background-color: $main-color;
+        span {
+          color: white;
+          transform: translateY(70px);
+          &:before {
+            transform: translateY(0px);
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+  .box {
+    width: 180px;
+    height: 50px;
+    background-color: $white;
+    transition: all 250ms ease;
+    will-change: transition;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    font-family: $font;
+    font-weight: 400;
+    border-radius: 6px; /* or 50% */
+    &:active {
+      transform: translateY(10px);
+    }
+    span {
+      transform: translate(0, 60px);
+      left: 0;
+      right: 0;
+      transition: all 300ms ease;
+      font-size: 1em;
+      user-select: none;
+      color: $main-color;
+      &:before {
+        font-size: 0.8em;
+        font-family: FontAwesome;
+        display: block;
+        transform: translateY(-80px);
+        opacity: 0;
+        transition: all 300ms ease-in-out;
+        font-weight: normal;
+        color: white;
+      }
+    }
+  }
+  .radio-sell {
+    span {
+      &:before {
+        content: "\f106";
+      }
+    }
+  }
+  .radio-buy {
+    span {
+      &:before {
+        content: "\f107";
+      }
+    }
+  }
+}

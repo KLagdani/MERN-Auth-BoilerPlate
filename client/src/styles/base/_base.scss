@@ -1,0 +1,34 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+
+.body {
+  font-family: "Roboto", sans-serif;
+}
+
+.dash-col-md-4 {
+  width: 33.33%;
+  padding: 0 15px;
+  display: inline-block;
+  float: left;
+}
+
+.dash-col-md-8 {
+  width: 66.66%;
+  padding: 0 15px;
+  display: inline-block;
+  float: left;
+}
+
+.dash-col-md-6 {
+  width: 50%;
+  padding: 0 15px;
+  display: inline-block;
+  float: left;
+}
+
+.dash-col-md-12 {
+  width: 100%;
+  padding: 0 15px;
+  display: inline-block;
+  float: left;
+  margin-bottom: 20px;
+}

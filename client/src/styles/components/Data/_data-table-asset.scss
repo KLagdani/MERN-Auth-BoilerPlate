@@ -1,0 +1,45 @@
+.selected-band {
+  background: #ffdee9;
+  padding: 20px;
+  color: #fa0d4c;
+  .fas {
+    color: #75666b;
+    float: right;
+    font-size: 1.6rem;
+    padding-left: 20px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.edit-asset-modal {
+  padding: 20px;
+  text-align: center;
+  .modal-title {
+    font-size: 1.2rem;
+    color: $main-color;
+    display: block;
+    text-align: center;
+    margin: 8px 0;
+  }
+}
+
+.edit-asset-field {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  .edit-asset-field_label {
+    display: inline-block;
+    text-align: left;
+    float: left;
+    padding-left: 4px;
+    color: $basic-grey;
+    font-weight: 700;
+  }
+  .edit-asset-field_field {
+    display: inline-block;
+    text-align: left;
+    float: left;
+  }
+}
