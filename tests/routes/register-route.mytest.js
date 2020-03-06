@@ -1,61 +1,68 @@
 const User = require("../../models/user-model");
-const request = require("supertest");
-var chai = require("chai");
-var sinon = require("sinon");
+var { deleteMeUser, alreadyExistUser } = require("./root.mytest");
 
+let chai = require("chai");
+let chaiHttp = require("chai-http");
+let should = chai.should();
 var expect = chai.expect;
+chai.use(chaiHttp);
+
 var { app } = require("../../server");
 
-process.env.NODE_ENV = "test";
-
-const deleteMeUser = {
-  username: "deleteMe",
-  email: "deleteMe@gmail.com",
-  password: "deleteMe",
-  password2: "deleteMe"
-};
-
-const alreadyExistUser = {
-  username: "alreadyExistUser",
-  email: "alreadyExistUser@gmail.com",
-  password: "alreadyExistUser",
-  password2: "alreadyExistUser"
-};
-
 var alreadyExistUserConfJWT = "";
-
-before(async () => {
-  await User.deleteOne({ email: "deleteMe@gmail.com" }, err => {
-    if (err) console.log("deleteMe user not found");
-  });
-  await new User(alreadyExistUser).save();
-  sinon.stub(console, "log");
-});
-
-after(async () => {
-  if (!console.log.restore) sinon.stub(console, "log");
-  await User.deleteOne({ email: "deleteMe@gmail.com" }, err => {
-    if (err) console.log("deleteMe user not found");
-  });
-  await User.deleteOne({ email: "alreadyExistUser@gmail.com" }, err => {
-    if (err) console.log("alreadyExistUser user not found");
-  });
-});
+var alreadyExistUserResetJWT = "";
 
 describe("api/register", () => {
+  before(done => {
+    chai
+      .request(app)
+      .post("/api/register/local")
+      .send(alreadyExistUser)
+      .end((err, res) => {
+        res.should.have.status(200);
+        expect(res.body.user)
+          .to.be.an("object")
+          .that.has.all.keys(
+            "confirmed",
+            "_id",
+            "username",
+            "email",
+            "password",
+            "confirmationJWT",
+            "__v"
+          );
+        expect(res.body.user.confirmed).to.equal(false);
+        expect(res.body.emailSent).to.equal("success");
+        User.findOne({ email: res.body.user.email })
+          .then(dbUser => {
+            expect(dbUser.confirmationJWT).to.equal(
+              res.body.user.confirmationJWT
+            );
+            expect(dbUser.confirmed).to.equal(false);
+            done();
+          })
+          .catch(done);
+      });
+  });
+  after(async () => {
+    await User.deleteOne({ email: alreadyExistUser.email }, err => {
+      if (err) console.log("alreadyExistUser user not found");
+    });
+  });
   describe("#get/api/register/test", () => {
     it("should return working", done => {
-      request(app)
+      chai
+        .request(app)
         .get("/api/register/test")
-        .expect(200)
-        .expect(res => {
-          expect(res.body.msg).to.equal("working");
-        })
-        .end(done);
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.msg.should.equal("working");
+          done();
+        });
     });
   });
 
-  describe("#get/api/register/local", () => {
+  describe("#post/api/register/local", () => {
     it("should return empty fields errors", done => {
       const expectedRes = {
         username: "Please enter a username",
@@ -63,21 +70,24 @@ describe("api/register", () => {
         password: "Please enter your password with minimum 5 characters",
         password2: "Please confirm your password"
       };
-      request(app)
-        .post("/api/register/local", {})
-        .expect(422)
-        .expect(res => {
+      chai
+        .request(app)
+        .post("/api/register/local")
+        .send({})
+        .end((err, res) => {
+          res.should.have.status(422);
           expect(res.body.errors).to.deep.equal(expectedRes);
-        })
-        .end(done);
+          done();
+        });
     });
 
     it("should create user", done => {
-      request(app)
+      chai
+        .request(app)
         .post("/api/register/local")
         .send(deleteMeUser)
-        .expect(200)
-        .expect(async res => {
+        .end((err, res) => {
+          res.should.have.status(200);
           expect(res.body.user)
             .to.be.an("object")
             .that.has.all.keys(
@@ -91,51 +101,252 @@ describe("api/register", () => {
             );
           expect(res.body.user.confirmed).to.equal(false);
           expect(res.body.emailSent).to.equal("success");
-          const dbUser = await User.findOne({ email: res.body.user.email });
-          expect(dbUser.confirmationJWT).to.equal(
-            res.body.user.confirmationJWT
-          );
-          expect(dbUser.confirmed).to.equal(false);
-        })
-        .end(done);
+          User.findOne({ email: res.body.user.email })
+            .then(dbUser => {
+              expect(dbUser.confirmationJWT).to.equal(
+                res.body.user.confirmationJWT
+              );
+              expect(dbUser.confirmed).to.equal(false);
+              done();
+            })
+            .catch(done);
+        });
     });
 
     it("should return already exists error", done => {
       const expectedErr = {
         email: "Email already exists"
       };
-      request(app)
+
+      chai
+        .request(app)
         .post("/api/register/local")
         .send(alreadyExistUser)
-        .expect(422)
-        .expect(res => {
+        .end((err, res) => {
+          res.should.have.status(422);
           expect(res.body.errors).to.deep.equal(expectedErr);
-        })
-        .end(done);
+          done();
+        });
+    });
+  });
+
+  describe("#post/api/register/confirmation", () => {
+    it("should confirm user", done => {
+      User.findOne({ email: alreadyExistUser.email }).then(user => {
+        alreadyExistUserConfJWT = user.confirmationJWT;
+        chai
+          .request(app)
+          .post("/api/register/confirmation")
+          .send({ token: alreadyExistUserConfJWT })
+          .end((err, res) => {
+            res.should.have.status(200);
+            expect(res.body.confirmation).to.equal("Success");
+            User.findOne({ email: user.email }).then(dbUser => {
+              expect(dbUser.confirmationJWT).to.equal("");
+              expect(dbUser.confirmed).to.equal(true);
+              done();
+            });
+          });
+      });
     });
 
-    it("should confirm user", async () => {
-      const user = await User.findOne({ email: alreadyExistUser.email });
-      alreadyExistUserConfJWT = user.confirmationJWT;
-      request(app)
+    it("should return error token invalid", done => {
+      chai
+        .request(app)
         .post("/api/register/confirmation")
         .send({ token: alreadyExistUserConfJWT })
-        .expect(200)
-        .expect(async res => {
-          expect(res.body.confirmation).to.equal("Success");
-          const dbUser = await User.findOne({ email: user.email });
-          expect(dbUser.confirmationJWT).to.equal("");
-          expect(dbUser.confirmed).to.equal(true);
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.confirmation).to.equal("Token is invalid");
+          done();
+        });
+    });
+  });
+
+  describe("#post/api/register/forgot", () => {
+    it("should send forgot email", done => {
+      chai
+        .request(app)
+        .post("/api/register/forgot")
+        .send({ email: alreadyExistUser.email })
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body.user)
+            .to.be.an("object")
+            .that.has.all.keys(
+              "confirmed",
+              "_id",
+              "username",
+              "email",
+              "password",
+              "confirmationJWT",
+              "resetJWT",
+              "__v"
+            );
+          expect(res.body.user.resetJWT).to.not.equal("");
+          expect(res.body.emailSent).to.equal("success");
+          alreadyExistUserResetJWT = res.body.user.resetJWT;
+          done();
         });
     });
 
-    it("should return error token invalid", async () => {
-      request(app)
-        .post("/api/register/confirmation")
-        .send({ token: alreadyExistUserConfJWT })
-        .expect(400)
-        .expect(async res => {
-          expect(res.body.msg).to.equal("Token is invalid");
+    it("should return error email not valid", done => {
+      chai
+        .request(app)
+        .post("/api/register/forgot")
+        .send({ email: "notValidEmail" })
+        .end((err, res) => {
+          res.should.have.status(422);
+          expect(res.body.errors.email).to.equal("Please enter a valid email");
+          done();
+        });
+    });
+
+    it("should return error no user found", done => {
+      chai
+        .request(app)
+        .post("/api/register/forgot")
+        .send({ email: "notValidUser@mail.com" })
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.email).to.equal(
+            "No user found with that email"
+          );
+          done();
+        });
+    });
+  });
+
+  describe("#post/api/register/init-reset", () => {
+    it("should validate token", done => {
+      chai
+        .request(app)
+        .post("/api/register/init-reset")
+        .send({ token: alreadyExistUserResetJWT })
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body.token).to.equal("Valid token");
+          expect(res.body.email).to.be.a("string");
+          done();
+        });
+    });
+
+    it("should return invalid token", done => {
+      chai
+        .request(app)
+        .post("/api/register/init-reset")
+        .send({ token: "invalidToken" })
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.token).to.equal("Invalid or expired token");
+          done();
+        });
+    });
+  });
+
+  describe("#post/api/register/reset", () => {
+    it("should return errors", done => {
+      const expectedErr = {
+        errors: {
+          email: "Please enter a valid email",
+          password: "Please enter your password with minimum 5 characters",
+          password2: "Please confirm your password"
+        }
+      };
+      chai
+        .request(app)
+        .post("/api/register/reset")
+        .send({})
+        .end((err, res) => {
+          res.should.have.status(422);
+          expect(res.body).to.deep.equal(expectedErr);
+          done();
+        });
+    });
+
+    it("should return invalid token", done => {
+      const user = {
+        email: alreadyExistUser.email,
+        password: "password2",
+        password2: "password2",
+        token: "invalid token"
+      };
+      chai
+        .request(app)
+        .post("/api/register/reset")
+        .send(user)
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.token).to.equal("Invalid or expired token");
+          done();
+        });
+    });
+
+    it("should return cannot reset this email", done => {
+      const user = {
+        email: "another@mail.com",
+        password: "password2",
+        password2: "password2",
+        token: alreadyExistUserResetJWT
+      };
+      chai
+        .request(app)
+        .post("/api/register/reset")
+        .send(user)
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.email).to.equal(
+            "You cannot reset password for this email"
+          );
+          done();
+        });
+    });
+
+    it("should reset password", done => {
+      const user = {
+        email: alreadyExistUser.email,
+        password: "password2",
+        password2: "password2",
+        token: alreadyExistUserResetJWT
+      };
+      chai
+        .request(app)
+        .post("/api/register/reset")
+        .send(user)
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body.user)
+            .to.be.an("object")
+            .that.has.all.keys(
+              "confirmed",
+              "_id",
+              "username",
+              "email",
+              "password",
+              "confirmationJWT",
+              "resetJWT",
+              "__v"
+            );
+          expect(res.body.user.resetJWT).to.equal("");
+          done();
+        });
+    });
+
+    it("should return invalid token as already set", done => {
+      const user = {
+        email: alreadyExistUser.email,
+        password: "password2",
+        password2: "password2",
+        token: alreadyExistUserResetJWT
+      };
+      chai
+        .request(app)
+        .post("/api/register/reset")
+        .send(user)
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.token).to.equal("Invalid or expired token");
+          done();
         });
     });
   });

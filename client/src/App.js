@@ -7,7 +7,7 @@ import React from "react";
 import { Provider } from "react-redux";
 import store from "./store";
 
-import Register from "./components/Auth/Register";
+import Register from "./components/auth/Register";
 
 function App() {
   return (

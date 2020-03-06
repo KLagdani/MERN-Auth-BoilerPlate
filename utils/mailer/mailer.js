@@ -44,12 +44,22 @@ sendResetPasswordLink = user => {
     to: user.email,
     subject: "Reset Password",
     text: `
-    To reset password follow this link
+    To reset your password follow this link
     ${`localhost:3000/reset/${user.resetJWT}`}
     `
   };
 
-  transport.sendMail(email);
+  return new Promise((resolve, reject) => {
+    transport.sendMail(email, (err, data) => {
+      if (err) {
+        console.error("Mail not sent", err);
+        resolve("fail");
+      } else {
+        console.log(`Email sent to ${user.email}`);
+        resolve("success");
+      }
+    });
+  });
 };
 
 module.exports = { sendConfirmationEmail, sendResetPasswordLink };

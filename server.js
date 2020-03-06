@@ -3,8 +3,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const path = require("path");
+const passport = require("passport");
+const passportSetup = require("./config/passport-setup");
 
 const register = require("./routes/register-route");
+const auth = require("./routes/auth-route");
 
 //ENV
 const port = process.env.PORT || 80;
@@ -12,6 +15,10 @@ const port = process.env.PORT || 80;
 //Express
 const app = express();
 app.use(bodyParser.json());
+
+//Passport setup
+app.use(passport.initialize());
+app.use(passport.session());
 
 //DB
 var db = process.env.MongoURI;
@@ -38,6 +45,7 @@ mongoose
 
 //Routes
 app.use("/api/register", register);
+app.use("/api/auth", auth);
 
 //Static folder set
 if (process.env.NODE_ENV === "production") {

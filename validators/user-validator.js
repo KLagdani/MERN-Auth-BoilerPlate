@@ -49,7 +49,53 @@ const validateUser = (req, res, next) => {
   });
 };
 
+const resetValidationRules = () => {
+  return [
+    body("email", "Please enter a valid email").isEmail(),
+    body(
+      "password",
+      "Please enter your password with minimum 5 characters"
+    ).isLength({ min: 5 }),
+    body("password2", "Please confirm your password")
+      .not()
+      .isEmpty()
+  ];
+};
+
+const authValidationRules = () => {
+  return [
+    body("email", "Please enter a valid email").isEmail(),
+    body(
+      "password",
+      "Please enter your password with minimum 5 characters"
+    ).isLength({ min: 5 })
+  ];
+};
+
+const forgotValidationRules = () => {
+  return [body("email", "Please enter a valid email").isEmail()];
+};
+
+const validateParams = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (errors.isEmpty()) {
+    return next();
+  }
+
+  const errorObj = {};
+  errors.array().map(err => (errorObj[err.param] = err.msg));
+
+  return res.status(422).json({
+    errors: errorObj
+  });
+};
+
 module.exports = {
   userValidationRules,
-  validateUser
+  validateUser,
+  resetValidationRules,
+  authValidationRules,
+  forgotValidationRules,
+  validateParams
 };
