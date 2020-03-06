@@ -14,7 +14,18 @@ const app = express();
 app.use(bodyParser.json());
 
 //DB
-const db = process.env.MongoURI;
+var db = process.env.MongoURI;
+if (process.env.NODE_ENV === "production") {
+  console.log("Running in prod");
+  db = db.concat("prod");
+} else if (process.env.NODE_ENV === "test") {
+  console.log("Running in test");
+  db = db.concat("test");
+} else {
+  console.log("Running in dev");
+  db = db.concat("dev");
+}
+
 mongoose
   .connect(db, {
     useUnifiedTopology: true,
@@ -29,7 +40,6 @@ mongoose
 app.use("/api/register", register);
 
 //Static folder set
-
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "client/build")));
   app.get("*", (req, res) => {
@@ -38,3 +48,5 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
+
+module.exports = { app };

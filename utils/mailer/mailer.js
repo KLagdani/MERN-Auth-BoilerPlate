@@ -1,38 +1,46 @@
+require("dotenv").config();
 const nodemailer = require("nodemailer");
-
-const _from = "Modern Portfolio <contact@modernportfolio.com>";
 
 setup = () => {
   return nodemailer.createTransport({
-    host: "smtp.mailtrap.io",
-    port: 2525,
+    service: "gmail",
     auth: {
-      user: "7985d337b6a37b",
-      pass: "4b47da9694c0c1"
+      user: process.env.NODEMAILER_USER,
+      pass: process.env.NODEMAILER_PASS
     }
   });
 };
 
-sendConfirmationEmail = user => {
+sendConfirmationEmail = async user => {
   const transport = setup();
   const email = {
-    _from,
+    from: "contact@promelio.com",
     to: user.email,
-    subject: "Welcome to Modern Portfolio",
+    subject: "Welcome to Promelio",
     text: `
       Welcome to Modern Portfolio. Please, confirm your email.
-      ${`localhost:3000/confirmation/${user.confirmationJWT}`}
+      ${`localhost:80/confirmation/${user.confirmationJWT}`}
       `
   };
 
-  transport.sendMail(email);
+  return new Promise((resolve, reject) => {
+    transport.sendMail(email, (err, data) => {
+      if (err) {
+        console.error("Mail not sent", err);
+        resolve("fail");
+      } else {
+        console.log(`Email sent to ${user.email}`);
+        resolve("success");
+      }
+    });
+  });
 };
 
 sendResetPasswordLink = user => {
   const transport = setup();
 
   const email = {
-    _from,
+    from: "contact@promelio.com",
     to: user.email,
     subject: "Reset Password",
     text: `

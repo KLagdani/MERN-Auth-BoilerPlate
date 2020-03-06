@@ -17,13 +17,13 @@ const {
 // @desc    Testing route
 // @access  Public
 router.get("/test", (req, res) => {
-  res.send("working");
+  res.send({ msg: "working" });
 });
 
 // @route   POST api/register/local
 // @desc    Creating a new user locally
 // @access  Public
-router.post("/local", userValidationRules(), validateUser, (req, res) => {
+router.post("/local", userValidationRules(), validateUser, async (req, res) => {
   const { username, email, password } = req.body;
 
   const confirmationJWT = jwt.sign(
@@ -38,18 +38,44 @@ router.post("/local", userValidationRules(), validateUser, (req, res) => {
     confirmationJWT
   });
 
+  const resMSG = {};
+
   bcrypt.hash(newUser.password, 10, (err, hash) => {
     if (err) throw err;
     newUser.password = hash;
     newUser
       .save()
-      .then(user => {
-        res.send(user);
+      .then(async user => {
+        resMSG.user = user;
+
+        const emailSent = await sendConfirmationEmail(newUser);
+        resMSG.emailSent = emailSent;
+
+        res.send(resMSG);
       })
       .catch(err => console.log(err));
   });
+});
 
-  sendConfirmationEmail(newUser);
+// @route   POST api/register/confirmation
+// @desc    Confirm newly created user
+// @access  Public
+router.post("/confirmation", (req, res) => {
+  const token = req.body.token;
+  User.findOneAndUpdate(
+    { confirmationJWT: token },
+    { confirmationJWT: "", confirmed: true },
+    { new: true }
+  )
+    .then(user => {
+      if (user) {
+        return res.json({ confirmation: "Success" });
+      }
+      const errorObj = {};
+      errorObj.confirmation = "Token is invalid";
+      return res.status(400).send(errorObj);
+    })
+    .catch(err => console.log(err));
 });
 
 module.exports = router;
