@@ -16,10 +16,10 @@ const TextField = ({
   readOnly
 }) => {
   return (
-    <div className="form-group">
+    <div className="form__group">
       <input
         type={type}
-        className={classnames("form-control", fieldClassName, {
+        className={classnames("form-control form__input", fieldClassName, {
           "is-invalid": error
         })}
         placeholder={placeholder}
@@ -29,7 +29,11 @@ const TextField = ({
         disabled={disabled}
         readOnly={readOnly && "readOnly"}
       />
-      {iconning && <span className={iconning}></span>}
+      <label for={name} className="form__label">
+        {iconning && <i class={iconning}></i>}
+        &nbsp;&nbsp;
+        {placeholder}
+      </label>
       {info && <small className="form-text text-muted">{info}</small>}
       {error && <div className="invalid-feedback">{error}</div>}
     </div>

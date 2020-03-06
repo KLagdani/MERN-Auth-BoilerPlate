@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import TextField from "../common/TextField";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -15,9 +14,11 @@ class Register extends React.Component {
       password: "",
       password2: "",
       errors: {},
-      alertVisible: false,
-      alertMessage: "",
-      emailToConfirm: ""
+      alert: {
+        alertVisible: true,
+        alertMessage: "this is alert",
+        emailToConfirm: ""
+      }
     };
 
     this.onChange = this.onChange.bind(this);
@@ -28,15 +29,19 @@ class Register extends React.Component {
 
   closeAlert() {
     this.setState({
-      alertVisible: false,
-      alertMessage: ""
+      alert: {
+        alertVisible: false,
+        alertMessage: ""
+      }
     });
   }
 
   openAlert(message) {
     this.setState({
-      alertVisible: true,
-      alertMessage: message
+      alert: {
+        alertVisible: true,
+        alertMessage: message
+      }
     });
   }
 
@@ -52,7 +57,9 @@ class Register extends React.Component {
 
     if (!nextProps.auth.isConfirmed) {
       this.setState({
-        emailToConfirm: this.state.email
+        alert: {
+          emailToConfirm: this.state.email
+        }
       });
       this.openAlert(
         `Please confirm your email at: ${this.state.emailToConfirm}`
@@ -69,9 +76,11 @@ class Register extends React.Component {
       this.setState({ errors: nextProps.errors });
     }
   }
+
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
   }
+
   onSubmit(e) {
     e.preventDefault();
 
@@ -87,74 +96,94 @@ class Register extends React.Component {
   render() {
     const { errors } = this.state;
     return (
-      <div className="login-page-bck LR-layout">
-        <div className="modal-diolog text-center login-page">
-          <div className="col-sm-8 main-section">
-            <div className="modal-content">
-              <div className="col-12 logo-img">
-                <img alt="" src="img/logo.png" />
+      <main className="register-page">
+        <div className="register-page_cover"></div>
+        <div className="register-page_content">
+          <div className="row register-page_content-row">
+            <div className="col-1-of-2 register-page_content-left">
+              <img
+                src="img/register.png"
+                alt="Register"
+                className="register-page_content-left_img"
+              />
+              <div className="u-center-text register-page_content-left_text">
+                <h2 className="heading-third register-page_content-left_text-title u-margin-bottom-small">
+                  Register
+                </h2>
+                <p className="paragraph u-center-text register-page_content-left_text-p">
+                  Hello and welcome, please register :)
+                </p>
               </div>
-              <Alert
-                color="success"
-                isOpen={this.state.alertVisible}
-                toggle={this.closeAlert}
-              >
-                {this.state.alertMessage}
-              </Alert>
-              <form className="col-12" onSubmit={this.onSubmit}>
-                <div className="form-group">
-                  <TextField
-                    placeholder="Username"
-                    name="username"
-                    type="text"
-                    value={this.state.username}
-                    onChange={this.onChange}
-                    error={errors.errors && errors.errors.username}
-                    iconning="fas fa-user floaty-icon"
-                  />
-                  <TextField
-                    placeholder="Email"
-                    name="email"
-                    type="text"
-                    value={this.state.email}
-                    onChange={this.onChange}
-                    error={errors.errors && errors.errors.email}
-                    iconning="fas fa-envelope floaty-icon"
-                  />
-                  <TextField
-                    placeholder="Password"
-                    name="password"
-                    type="password"
-                    value={this.state.password}
-                    onChange={this.onChange}
-                    error={errors.errors && errors.errors.password}
-                    iconning="fas fa-lock floaty-icon"
-                  />
-                  <TextField
-                    placeholder="Confirm Password"
-                    name="password2"
-                    type="password"
-                    value={this.state.password2}
-                    onChange={this.onChange}
-                    error={errors.errors && errors.errors.password2}
-                    iconning="fas fa-lock floaty-icon"
-                  />
-                </div>
-                <button type="submit" className="btn login-btn">
-                  <i className="fas fa-user-plus"></i> Register
-                </button>
-                <div className="pied-de-form">
-                  <div className="link-to-page-div have-an-account">
-                    <Link to="/" className="link-btn">
-                      <p className="link-btn-sign-in">Sign in</p>
-                    </Link>
+            </div>
+            <div className="col-1-of-2 register-page_content-right">
+              <div className="register-page_content-right_form">
+                <h1 className="heading-first heading-first--main register-page_content-right_form_title u-margin-bottom-big">
+                  {" "}
+                  MERN Boiler Plate
+                </h1>
+                <h1 className="heading-first heading-first--sub">
+                  Welcome to boiler plate
+                </h1>
+                <Alert
+                  color="success"
+                  isOpen={this.state.alert.alertVisible}
+                  toggle={this.closeAlert}
+                  className="u-margin-bottom-small"
+                >
+                  {this.state.alert.alertMessage}
+                </Alert>
+
+                <form
+                  className="register-page_content-right_form-content form"
+                  onSubmit={this.onSubmit}
+                >
+                  <div className="form-group">
+                    <TextField
+                      placeholder="Username"
+                      name="username"
+                      type="text"
+                      value={this.state.username}
+                      onChange={this.onChange}
+                      error={errors.errors && errors.errors.username}
+                      iconning="fas fa-user"
+                    />
+                    <TextField
+                      placeholder="Email"
+                      name="email"
+                      type="text"
+                      value={this.state.email}
+                      onChange={this.onChange}
+                      error={errors.errors && errors.errors.email}
+                      iconning="fas fa-envelope floaty-icon"
+                    />
+                    <TextField
+                      placeholder="Password"
+                      name="password"
+                      type="password"
+                      value={this.state.password}
+                      onChange={this.onChange}
+                      error={errors.errors && errors.errors.password}
+                      iconning="fas fa-lock floaty-icon"
+                    />
+                    <TextField
+                      placeholder="Confirm Password"
+                      name="password2"
+                      type="password"
+                      value={this.state.password2}
+                      onChange={this.onChange}
+                      error={errors.errors && errors.errors.password2}
+                      iconning="fas fa-lock floaty-icon"
+                    />
                   </div>
-                </div>
-              </form>
+                  <button type="submit" className="form__btn">
+                    <i className="fas fa-user-plus"></i> Register
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 }

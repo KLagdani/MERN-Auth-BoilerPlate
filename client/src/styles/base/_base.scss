@@ -1,34 +1,33 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
-.body {
-  font-family: "Roboto", sans-serif;
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
 }
 
-.dash-col-md-4 {
-  width: 33.33%;
-  padding: 0 15px;
-  display: inline-block;
-  float: left;
+html {
+  font-size: 62.5%;
+
+  @include respond(tab-land) {
+    font-size: 56.25%;
+  }
+
+  @include respond(tab-port) {
+    font-size: 50%;
+  }
+
+  @include respond(big-desktop) {
+    font-size: 75%;
+  }
 }
 
-.dash-col-md-8 {
-  width: 66.66%;
-  padding: 0 15px;
-  display: inline-block;
-  float: left;
+body {
+  box-sizing: border-box;
 }
 
-.dash-col-md-6 {
-  width: 50%;
-  padding: 0 15px;
-  display: inline-block;
-  float: left;
-}
-
-.dash-col-md-12 {
-  width: 100%;
-  padding: 0 15px;
-  display: inline-block;
-  float: left;
-  margin-bottom: 20px;
+::selection {
+  background-color: $fourth-color;
 }
