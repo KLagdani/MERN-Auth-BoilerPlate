@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { registerUser } from "../../actions/registerAction";
 import { Alert } from "reactstrap";
+import isEmpty from "../../utils/isEmpty";
 
 class Register extends React.Component {
   constructor() {
@@ -17,7 +18,8 @@ class Register extends React.Component {
       alert: {
         alertVisible: false,
         alertMessage: ""
-      }
+      },
+      loading: false
     };
 
     this.onChange = this.onChange.bind(this);
@@ -54,7 +56,7 @@ class Register extends React.Component {
       this.props.history.push("/dashboard");
     }
 
-    if (!nextProps.auth.isConfirmed) {
+    if (nextProps.register.confirmation.emailSent) {
       this.openAlert(
         `Please confirm your email at: ${this.props.register.user.email}`
       );
@@ -62,12 +64,18 @@ class Register extends React.Component {
         email: "",
         username: "",
         password: "",
-        password2: ""
+        password2: "",
+        loading: false
       });
     }
 
-    if (nextProps.errors) {
-      this.setState({ errors: nextProps.errors });
+    if (!isEmpty(nextProps.errors)) {
+      this.setState({ errors: nextProps.errors, loading: false });
+      this.closeAlert();
+    }
+
+    if (isEmpty(nextProps.errors)) {
+      this.setState({ errors: "" });
     }
   }
 
@@ -77,6 +85,10 @@ class Register extends React.Component {
 
   onSubmit(e) {
     e.preventDefault();
+
+    this.setState({
+      loading: true
+    });
 
     const userData = {
       username: this.state.username,
@@ -111,7 +123,7 @@ class Register extends React.Component {
             </div>
             <div className="col-1-of-2 register-page_content-right">
               <div className="register-page_content-right_form">
-                <h1 className="heading-first heading-first--main register-page_content-right_form_title u-margin-bottom-big">
+                <h1 className="heading-first heading-first--main register-page_content-right_form_title u-margin-bottom-medium">
                   {" "}
                   MERN Boiler Plate
                 </h1>
@@ -169,12 +181,25 @@ class Register extends React.Component {
                       iconning="fas fa-lock floaty-icon"
                     />
                   </div>
-                  <button
-                    type="submit"
-                    className="form__btn u-margin-top-small"
-                  >
-                    <i className="fas fa-user-plus"></i> &nbsp; Register
-                  </button>
+                  {!this.state.loading && (
+                    <button
+                      type="submit"
+                      className="form__btn u-margin-top-medium"
+                    >
+                      <i className="fas fa-user-plus"></i> &nbsp; Register
+                    </button>
+                  )}
+
+                  <div className="form__spinner u-margin-top-medium">
+                    {this.state.loading && (
+                      <div class="lds-ellipsis">
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                      </div>
+                    )}
+                  </div>
                 </form>
               </div>
             </div>
