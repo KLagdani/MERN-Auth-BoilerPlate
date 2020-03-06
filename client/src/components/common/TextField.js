@@ -29,8 +29,8 @@ const TextField = ({
         disabled={disabled}
         readOnly={readOnly && "readOnly"}
       />
-      <label for={name} className="form__label">
-        {iconning && <i class={iconning}></i>}
+      <label htmlFor={name} className="form__label">
+        {iconning && <i className={iconning}></i>}
         &nbsp;&nbsp;
         {placeholder}
       </label>

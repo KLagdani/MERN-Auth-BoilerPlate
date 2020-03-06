@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import TextField from "../common/TextField";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
@@ -119,6 +120,11 @@ class Register extends React.Component {
                 <p className="paragraph u-center-text register-page_content-left_text-p">
                   Hello, glad you're here :)
                 </p>
+                <div className="register-page_content-left_text-btn u-margin-top-small">
+                  <Link to="/" className="btn__link">
+                    Already got an account ?
+                  </Link>
+                </div>
               </div>
             </div>
             <div className="col-1-of-2 register-page_content-right">
@@ -192,7 +198,7 @@ class Register extends React.Component {
 
                   <div className="form__spinner u-margin-top-medium">
                     {this.state.loading && (
-                      <div class="lds-ellipsis">
+                      <div className="lds-ellipsis">
                         <div></div>
                         <div></div>
                         <div></div>
@@ -204,6 +210,12 @@ class Register extends React.Component {
               </div>
             </div>
           </div>
+        </div>
+
+        <div className="footer__copyright">
+          <a target="_blank" href="http://lagdani.com" className="footer__link">
+            © Kaoutar Lagdani
+          </a>
         </div>
       </main>
     );
