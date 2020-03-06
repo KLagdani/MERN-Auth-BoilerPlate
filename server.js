@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === "production") {
   console.log("Running in dev");
   db = db.concat("dev");
 }
-
+console.log(db);
 mongoose
   .connect(db, {
     useUnifiedTopology: true,
