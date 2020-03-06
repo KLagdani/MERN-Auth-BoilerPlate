@@ -27,10 +27,10 @@ sendConfirmationEmail = async user => {
     transport.sendMail(email, (err, data) => {
       if (err) {
         console.error("Mail not sent", err);
-        resolve("fail");
+        resolve(false);
       } else {
         console.log(`Email sent to ${user.email}`);
-        resolve("success");
+        resolve(true);
       }
     });
   });
@@ -53,10 +53,10 @@ sendResetPasswordLink = user => {
     transport.sendMail(email, (err, data) => {
       if (err) {
         console.error("Mail not sent", err);
-        resolve("fail");
+        resolve(false);
       } else {
         console.log(`Email sent to ${user.email}`);
-        resolve("success");
+        resolve(true);
       }
     });
   });

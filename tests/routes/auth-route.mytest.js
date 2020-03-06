@@ -34,7 +34,7 @@ describe("api/auth", () => {
             "__v"
           );
         expect(res.body.user.confirmed).to.equal(false);
-        expect(res.body.emailSent).to.equal("success");
+        expect(res.body.emailSent).to.equal(true);
         User.findOne({ email: res.body.user.email })
           .then(dbUser => {
             expect(dbUser.confirmationJWT).to.equal(

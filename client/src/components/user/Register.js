@@ -2,7 +2,7 @@ import React from "react";
 import TextField from "../common/TextField";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { registerUser } from "../../actions/authActions";
+import { registerUser } from "../../actions/registerAction";
 import { Alert } from "reactstrap";
 
 class Register extends React.Component {
@@ -15,9 +15,8 @@ class Register extends React.Component {
       password2: "",
       errors: {},
       alert: {
-        alertVisible: true,
-        alertMessage: "this is alert",
-        emailToConfirm: ""
+        alertVisible: false,
+        alertMessage: ""
       }
     };
 
@@ -56,13 +55,8 @@ class Register extends React.Component {
     }
 
     if (!nextProps.auth.isConfirmed) {
-      this.setState({
-        alert: {
-          emailToConfirm: this.state.email
-        }
-      });
       this.openAlert(
-        `Please confirm your email at: ${this.state.emailToConfirm}`
+        `Please confirm your email at: ${this.props.register.user.email}`
       );
       this.setState({
         email: "",
@@ -111,7 +105,7 @@ class Register extends React.Component {
                   Register
                 </h2>
                 <p className="paragraph u-center-text register-page_content-left_text-p">
-                  Hello and welcome, please register :)
+                  Hello, glad you're here :)
                 </p>
               </div>
             </div>
@@ -175,8 +169,11 @@ class Register extends React.Component {
                       iconning="fas fa-lock floaty-icon"
                     />
                   </div>
-                  <button type="submit" className="form__btn">
-                    <i className="fas fa-user-plus"></i> Register
+                  <button
+                    type="submit"
+                    className="form__btn u-margin-top-small"
+                  >
+                    <i className="fas fa-user-plus"></i> &nbsp; Register
                   </button>
                 </form>
               </div>
@@ -191,11 +188,13 @@ class Register extends React.Component {
 Register.propTypes = {
   registerUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
+  register: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  register: state.register,
   errors: state.errors
 });
 
