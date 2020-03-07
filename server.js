@@ -10,7 +10,7 @@ const register = require("./routes/register-route");
 const auth = require("./routes/auth-route");
 
 //ENV
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 5000;
 
 //Express
 const app = express();
