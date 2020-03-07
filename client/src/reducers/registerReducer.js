@@ -31,7 +31,9 @@ export default (state = initialState, action) => {
         },
         confirmation: {
           ...state.confirmation,
-          emailSent: action.payload.emailSent
+          emailSent: action.payload.emailSent,
+          isConfirmed: false,
+          newEmailSent: false
         }
       };
     case USER_CONFIRMED:
