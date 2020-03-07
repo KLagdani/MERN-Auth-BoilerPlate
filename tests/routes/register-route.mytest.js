@@ -131,6 +131,42 @@ describe("api/register", () => {
   });
 
   describe("#post/api/register/confirmation", () => {
+    it("should return user not confirmed", done => {
+      chai
+        .request(app)
+        .post("/api/register/isconfirmed")
+        .send({ email: alreadyExistUser.email })
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body.isConfirmed).to.equal(false);
+          done();
+        });
+    });
+
+    it("should send new confirmation mail to user", done => {
+      chai
+        .request(app)
+        .post("/api/register/new-confirmation")
+        .send({ email: alreadyExistUser.email })
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body.user)
+            .to.be.an("object")
+            .that.has.all.keys(
+              "confirmed",
+              "_id",
+              "username",
+              "email",
+              "password",
+              "confirmationJWT",
+              "__v"
+            );
+          expect(res.body.user.confirmed).to.equal(false);
+          expect(res.body.emailSent).to.equal(true);
+          done();
+        });
+    });
+
     it("should confirm user", done => {
       User.findOne({ email: alreadyExistUser.email }).then(user => {
         alreadyExistUserConfJWT = user.confirmationJWT;
@@ -158,6 +194,60 @@ describe("api/register", () => {
         .end((err, res) => {
           res.should.have.status(400);
           expect(res.body.errors.confirmation).to.equal("Token is invalid");
+          done();
+        });
+    });
+  });
+
+  describe("#post/api/register/isconfirmed", () => {
+    it("should return user confirmed", done => {
+      chai
+        .request(app)
+        .post("/api/register/isconfirmed")
+        .send({ email: alreadyExistUser.email })
+        .end((err, res) => {
+          res.should.have.status(200);
+          expect(res.body.isConfirmed).to.equal(true);
+          done();
+        });
+    });
+
+    it("should return error no email found for isconfirmed", done => {
+      chai
+        .request(app)
+        .post("/api/register/isconfirmed")
+        .send({ email: "invalidEmail@gmail.com" })
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.email).to.equal("Email not found");
+          done();
+        });
+    });
+  });
+
+  describe("#post/api/register/new-confirmation", () => {
+    it("should return user already confirmed", done => {
+      chai
+        .request(app)
+        .post("/api/register/new-confirmation")
+        .send({ email: alreadyExistUser.email })
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.email).to.equal("Email already confirmed");
+          done();
+        });
+    });
+
+    it("should return no email found for new confirmation mail", done => {
+      chai
+        .request(app)
+        .post("/api/register/new-confirmation")
+        .send({ email: "invalid@mail.com" })
+        .end((err, res) => {
+          res.should.have.status(400);
+          expect(res.body.errors.email).to.equal(
+            "No user found with that email"
+          );
           done();
         });
     });

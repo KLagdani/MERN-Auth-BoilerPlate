@@ -4,6 +4,8 @@ import TextField from "../common/TextField";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { loginUser } from "../../actions/authActions";
+import { isConfirmed, sendConfirmation } from "../../actions/registerAction";
+import { Alert } from "reactstrap";
 import isEmpty from "../../utils/isEmpty";
 
 class Login extends React.Component {
@@ -13,11 +15,60 @@ class Login extends React.Component {
       email: "",
       password: "",
       errors: {},
-      loading: false
+      loading: false,
+      alert: {
+        alertVisible: false,
+        alertMessage: ""
+      },
+      info: {
+        infoVisible: false,
+        infoMessage: ""
+      },
+      confirmationLoading: false
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.closeAlert = this.closeAlert.bind(this);
+    this.openAlert = this.openAlert.bind(this);
+    this.closeInfo = this.closeInfo.bind(this);
+    this.openInfo = this.openInfo.bind(this);
+  }
+
+  closeAlert() {
+    this.setState({
+      alert: {
+        alertVisible: false,
+        alertMessage: ""
+      }
+    });
+  }
+
+  openAlert(message) {
+    this.setState({
+      alert: {
+        alertVisible: true,
+        alertMessage: message
+      }
+    });
+  }
+
+  closeInfo() {
+    this.setState({
+      info: {
+        infoVisible: false,
+        infoMessage: ""
+      }
+    });
+  }
+
+  openInfo(message) {
+    this.setState({
+      info: {
+        infoVisible: true,
+        infoMessage: message
+      }
+    });
   }
 
   componentDidMount() {
@@ -31,27 +82,62 @@ class Login extends React.Component {
     }
 
     if (!isEmpty(nextProps.errors)) {
-      this.setState({ errors: nextProps.errors, loading: false });
+      this.setState({
+        errors: nextProps.errors,
+        loading: false,
+        confirmationLoading: false
+      });
+    }
+
+    if (nextProps.register.confirmation.isConfirmed) {
+      this.setState({
+        loading: true
+      });
+
+      const userData = {
+        email: this.state.email,
+        password: this.state.password
+      };
+
+      return this.props.loginUser(userData);
+    }
+
+    if (this.props.register.confirmation.newEmailSent) {
+      this.openInfo(
+        "We just sent you a new validation email, please refresh the page to login."
+      );
+    }
+
+    if (!nextProps.register.confirmation.isConfirmed) {
+      this.openAlert(`Your email is not yet verified.`);
+    }
+
+    if (nextProps.register.confirmation.newEmailSent) {
+      this.setState({
+        confirmationLoading: false
+      });
+      this.openInfo(
+        "We just sent you a new validation email, please refresh the page to login."
+      );
+      this.closeAlert();
     }
   }
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
+    this.closeAlert();
+  }
+
+  sendConfirmation(e) {
+    e.preventDefault();
+    this.setState({ confirmationLoading: true });
+    this.closeAlert();
+    this.props.sendConfirmation({ email: this.state.email });
   }
 
   onSubmit(e) {
     e.preventDefault();
-
-    this.setState({
-      loading: true
-    });
-
-    const userData = {
-      email: this.state.email,
-      password: this.state.password
-    };
-
-    this.props.loginUser(userData);
+    this.props.isConfirmed({ email: this.state.email });
   }
   render() {
     const { errors } = this.state;
@@ -69,7 +155,43 @@ class Login extends React.Component {
                 <h1 className="heading-first heading-first--sub u-margin-bottom-big">
                   Welcome to boiler plate
                 </h1>
-
+                <Alert
+                  color="danger"
+                  isOpen={this.state.alert.alertVisible}
+                  toggle={this.closeAlert}
+                  className="u-margin-bottom-small"
+                >
+                  {this.state.alert.alertMessage}
+                </Alert>
+                <Alert
+                  color="success"
+                  isOpen={this.state.info.infoVisible}
+                  toggle={this.closeInfo}
+                  className="u-margin-bottom-small"
+                >
+                  {this.state.info.infoMessage}
+                </Alert>
+                {this.state.alert.alertVisible && (
+                  <div className="login-page_content-left_new-link">
+                    <Link
+                      to="/login"
+                      className="login-page_content_btn__link"
+                      onClick={this.sendConfirmation.bind(this)}
+                    >
+                      Send new validation link
+                    </Link>
+                  </div>
+                )}
+                {this.state.confirmationLoading && (
+                  <div className="u-margin-bottom-small">
+                    <div className="lds-ellipsis">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </div>
+                )}
                 <form
                   className="login-page_content-left_form-content form"
                   onSubmit={this.onSubmit}
@@ -156,6 +278,8 @@ class Login extends React.Component {
 
 Login.propTypes = {
   loginUser: PropTypes.func.isRequired,
+  isConfirmed: PropTypes.func.isRequired,
+  sendConfirmation: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   register: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
@@ -169,5 +293,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { loginUser }
+  { loginUser, isConfirmed, sendConfirmation }
 )(Login);

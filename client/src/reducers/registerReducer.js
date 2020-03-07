@@ -1,12 +1,15 @@
 import {
   USER_REGISTERED_FOR_CONFIRMATION,
-  USER_CONFIRMED
+  USER_CONFIRMED,
+  CHECK_USER_CONFIRMATION,
+  NEW_CONFRIMATION_MAIL
 } from "../actions/types";
 
 const initialState = {
   user: {},
   confirmation: {
     emailSent: false,
+    newEmailSent: false,
     isConfirmed: false
   },
   reset: {
@@ -39,6 +42,27 @@ export default (state = initialState, action) => {
           isConfirmed: true
         },
         user: action.payload
+      };
+    case NEW_CONFRIMATION_MAIL:
+      return {
+        ...state,
+        confirmation: {
+          ...state.confirmation,
+          newEmailSent: action.payload.emailSent,
+          isConfirmed: action.payload.user.confirmed
+        },
+        user: {
+          ...state.user,
+          email: action.payload.user.email
+        }
+      };
+    case CHECK_USER_CONFIRMATION:
+      return {
+        ...state,
+        confirmation: {
+          ...state.confirmation,
+          isConfirmed: action.payload.isConfirmed
+        }
       };
     default:
       return state;

@@ -62,11 +62,45 @@ router.post("/local", userValidationRules(), validateUser, async (req, res) => {
   }
 });
 
+router.post("/new-confirmation", async (req, res) => {
+  const { email } = req.body;
+  let user = await User.findOne({ email });
+
+  if (!user) {
+    const errorObj = {};
+    errorObj.email = "No user found with that email";
+    return res.status(400).send({ errors: errorObj });
+  }
+
+  if (user.confirmed) {
+    const errorObj = {};
+    errorObj.email = "Email already confirmed";
+    return res.status(400).send({ errors: errorObj });
+  }
+
+  const confirmationJWT = jwt.sign(
+    { username: user.username, email: user.email, confirmed: false },
+    process.env.JWT_SECRET
+  );
+
+  user = await User.findOneAndUpdate(
+    { _id: user._id },
+    { confirmationJWT },
+    { new: true }
+  );
+
+  const resMSG = {};
+  resMSG.user = user;
+  const emailSent = await sendConfirmationEmail(user);
+  resMSG.emailSent = emailSent;
+
+  return res.send(resMSG);
+});
+
 // @route   POST api/register/confirmation
 // @desc    Confirm newly created user
 // @access  Public
 router.post("/confirmation", async (req, res) => {
-  console.log("begin confirmation");
   const token = req.body.token;
   try {
     user = await User.findOneAndUpdate(
@@ -79,6 +113,25 @@ router.post("/confirmation", async (req, res) => {
     }
     const errorObj = {};
     errorObj.confirmation = "Token is invalid";
+    return res.status(400).send({ errors: errorObj });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+});
+
+// @route   POST api/register/isconfirmed
+// @desc    Check if user email is confirmed
+// @access  Public
+router.post("/isconfirmed", async (req, res) => {
+  const email = req.body.email;
+  try {
+    user = await User.findOne({ email });
+    if (user) {
+      return res.json({ isConfirmed: user.confirmed });
+    }
+    const errorObj = {};
+    errorObj.email = "Email not found";
     return res.status(400).send({ errors: errorObj });
   } catch (err) {
     console.error(err.message);

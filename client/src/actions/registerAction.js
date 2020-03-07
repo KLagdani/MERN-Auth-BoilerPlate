@@ -5,7 +5,9 @@ import {
   GET_ERRORS,
   CLEAR_ERRORS,
   USER_REGISTERED_FOR_CONFIRMATION,
-  USER_CONFIRMED
+  USER_CONFIRMED,
+  CHECK_USER_CONFIRMATION,
+  NEW_CONFRIMATION_MAIL
 } from "./types";
 
 // Register User
@@ -19,6 +21,42 @@ export const registerUser = userData => dispatch => {
       });
       dispatch({
         type: CLEAR_ERRORS
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
+//Check if user is confirmed
+export const isConfirmed = userData => dispatch => {
+  axios
+    .post("/api/register/isconfirmed", userData)
+    .then(res => {
+      dispatch({
+        type: CHECK_USER_CONFIRMATION,
+        payload: res.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
+//Send new confirmation link
+export const sendConfirmation = userData => dispatch => {
+  axios
+    .post("/api/register/new-confirmation", userData)
+    .then(res => {
+      dispatch({
+        type: NEW_CONFRIMATION_MAIL,
+        payload: res.data
       });
     })
     .catch(err => {
