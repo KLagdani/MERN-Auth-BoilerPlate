@@ -87,9 +87,20 @@ class Login extends React.Component {
         loading: false,
         confirmationLoading: false
       });
+      this.closeAlert();
+      this.closeInfo();
     }
 
-    if (nextProps.register.confirmation.isConfirmed) {
+    if (isEmpty(nextProps.errors)) {
+      this.setState({
+        errors: {}
+      });
+    }
+
+    if (
+      nextProps.register.confirmation.isConfirmed &&
+      isEmpty(nextProps.errors)
+    ) {
       this.setState({
         loading: true
       });
@@ -104,11 +115,14 @@ class Login extends React.Component {
 
     if (this.props.register.confirmation.newEmailSent) {
       this.openInfo(
-        "We just sent you a new validation email, please refresh the page to login."
+        "We just sent you a new validation email, please confirm and refresh the page to login."
       );
     }
 
-    if (!nextProps.register.confirmation.isConfirmed) {
+    if (
+      !nextProps.register.confirmation.isConfirmed &&
+      isEmpty(nextProps.errors)
+    ) {
       this.openAlert(`Your email is not yet verified.`);
     }
 
@@ -117,7 +131,7 @@ class Login extends React.Component {
         confirmationLoading: false
       });
       this.openInfo(
-        "We just sent you a new validation email, please refresh the page to login."
+        "We just sent you a new validation email, please confirm and refresh the page to login."
       );
       this.closeAlert();
     }

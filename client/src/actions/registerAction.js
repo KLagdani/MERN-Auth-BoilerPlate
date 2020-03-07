@@ -37,6 +37,9 @@ export const isConfirmed = userData => dispatch => {
     .post("/api/register/isconfirmed", userData)
     .then(res => {
       dispatch({
+        type: CLEAR_ERRORS
+      });
+      dispatch({
         type: CHECK_USER_CONFIRMATION,
         payload: res.data
       });
