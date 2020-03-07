@@ -66,6 +66,7 @@ router.post("/local", userValidationRules(), validateUser, async (req, res) => {
 // @desc    Confirm newly created user
 // @access  Public
 router.post("/confirmation", async (req, res) => {
+  console.log("begin confirmation");
   const token = req.body.token;
   try {
     user = await User.findOneAndUpdate(

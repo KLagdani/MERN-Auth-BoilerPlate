@@ -18,7 +18,7 @@ sendConfirmationEmail = async user => {
     to: user.email,
     subject: "Welcome to MERN Boiler Plate | KL",
     text: `
-      Welcome to Modern Portfolio. Please, confirm your email.
+      Welcome to MERN Boiler Plate | KL. Please, confirm your email.
       ${`${process.env.NODEMAILER_HOST}/confirmation/${user.confirmationJWT}`}
       `
   };

@@ -54,6 +54,13 @@ body {
 .paragraph {
   font-size: $default-font-size;
   text-align: justify;
+  &-danger {
+    color: red;
+  }
+
+  &-success {
+    color: $second-color-light !important;
+  }
 }
 
 .btn__link {

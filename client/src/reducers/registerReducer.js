@@ -1,10 +1,12 @@
-import { USER_REGISTERED_FOR_CONFIRMATION } from "../actions/types";
+import {
+  USER_REGISTERED_FOR_CONFIRMATION,
+  USER_CONFIRMED
+} from "../actions/types";
 
 const initialState = {
   user: {},
   confirmation: {
     emailSent: false,
-    loadingConfirmation: true,
     isConfirmed: false
   },
   reset: {
@@ -28,6 +30,15 @@ export default (state = initialState, action) => {
           ...state.confirmation,
           emailSent: action.payload.emailSent
         }
+      };
+    case USER_CONFIRMED:
+      return {
+        ...state,
+        confirmation: {
+          ...state.confirmation,
+          isConfirmed: true
+        },
+        user: action.payload
       };
     default:
       return state;

@@ -13,6 +13,7 @@ import { setCurrentUser, logoutUser } from "./actions/authActions";
 import Register from "./components/user/Register";
 import Login from "./components/user/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
+import Confirm from "./components/user/Confirm";
 
 //Check for token
 if (localStorage.jwtToken) {
@@ -37,6 +38,7 @@ function App() {
             <Route exact path="/" component={Register} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/dashboard" component={Dashboard} />
+            <Route exact path="/confirmation/:token" component={Confirm} />
           </div>
         </Router>
       </div>
