@@ -1,3 +1,5 @@
+![ScreenShot](/client/public/img/screen.png)
+
 # MERN Auth Boiler Plate
 
 This is a Boiler Plate for authentication developed with the MERN stack.
