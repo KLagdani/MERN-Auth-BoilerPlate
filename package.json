@@ -1,5 +1,5 @@
 {
-  "name": "MERN Boiler Plate - KL",
+  "name": "mern-kl-boilerplate",
   "version": "1.0.0",
   "description": "Manage your stocks",
   "main": "server.js",
