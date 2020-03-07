@@ -121,7 +121,7 @@ class Register extends React.Component {
                   Hello, glad you're here :)
                 </p>
                 <div className="register-page_content-left_text-btn u-margin-top-small">
-                  <Link to="/" className="btn__link">
+                  <Link to="/login" className="btn__link">
                     Already got an account ?
                   </Link>
                 </div>
@@ -213,7 +213,12 @@ class Register extends React.Component {
         </div>
 
         <div className="footer__copyright">
-          <a target="_blank" href="http://lagdani.com" className="footer__link">
+          <a
+            target="_blank"
+            href="http://lagdani.com"
+            className="footer__link"
+            rel="noopener noreferrer"
+          >
             © Kaoutar Lagdani
           </a>
         </div>

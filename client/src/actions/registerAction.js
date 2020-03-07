@@ -11,7 +11,6 @@ export const registerUser = userData => dispatch => {
   axios
     .post("/api/register/local", userData)
     .then(res => {
-      console.log("res.body", res.data);
       dispatch({
         type: USER_REGISTERED_FOR_CONFIRMATION,
         payload: res.data
@@ -21,7 +20,6 @@ export const registerUser = userData => dispatch => {
       });
     })
     .catch(err => {
-      console.log(err);
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data

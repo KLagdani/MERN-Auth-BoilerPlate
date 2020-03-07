@@ -32,7 +32,7 @@ passport.use(
             return done(null, user);
           } else {
             const errorObj = {};
-            errorObj.email = "Wrong password";
+            errorObj.password = "Wrong password";
             return done(null, false, { errors: errorObj });
           }
         });

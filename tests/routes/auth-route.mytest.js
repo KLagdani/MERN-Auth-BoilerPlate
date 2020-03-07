@@ -108,7 +108,7 @@ describe("api/auth", () => {
     it("should return invalid pass", done => {
       const expectedErr = {
         errors: {
-          email: "Wrong password"
+          password: "Wrong password"
         }
       };
       chai

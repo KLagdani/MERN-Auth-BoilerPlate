@@ -14,12 +14,12 @@ setup = () => {
 sendConfirmationEmail = async user => {
   const transport = setup();
   const email = {
-    from: "contact@promelio.com",
+    from: "MERN Boiler Plate | KL",
     to: user.email,
-    subject: "Welcome to Promelio",
+    subject: "Welcome to MERN Boiler Plate | KL",
     text: `
       Welcome to Modern Portfolio. Please, confirm your email.
-      ${`localhost:80/confirmation/${user.confirmationJWT}`}
+      ${`${process.env.NODEMAILER_HOST}/confirmation/${user.confirmationJWT}`}
       `
   };
 
@@ -40,12 +40,12 @@ sendResetPasswordLink = user => {
   const transport = setup();
 
   const email = {
-    from: "contact@promelio.com",
+    from: "MERN Boiler Plate | KL",
     to: user.email,
     subject: "Reset Password",
     text: `
     To reset your password follow this link
-    ${`localhost:3000/reset/${user.resetJWT}`}
+    ${`${process.env.NODEMAILER_HOST}/reset/${user.resetJWT}`}
     `
   };
 
