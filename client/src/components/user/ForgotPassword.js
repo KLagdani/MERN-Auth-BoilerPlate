@@ -6,13 +6,13 @@ import PropTypes from "prop-types";
 import { loginUser } from "../../actions/authActions";
 import { sendReset } from "../../actions/registerAction";
 import { Alert } from "reactstrap";
+import isEmpty from "../../utils/isEmpty";
 
 class ForgotPassword extends React.Component {
   constructor() {
     super();
     this.state = {
       email: "",
-      password: "",
       errors: {},
       info: {
         infoVisible: false,
@@ -58,11 +58,20 @@ class ForgotPassword extends React.Component {
       this.setState({ loading: false });
       this.openInfo(`Reset email sent to: ${nextProps.register.reset.email}`);
     }
+
+    if (!isEmpty(nextProps.errors)) {
+      this.setState({ errors: nextProps.errors, loading: false });
+    }
+
+    if (isEmpty(nextProps.errors)) {
+      this.setState({ errors: "" });
+    }
   }
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
     this.closeInfo();
+    this.setState({ errors: "" });
   }
 
   onSubmit(e) {
@@ -135,7 +144,7 @@ class ForgotPassword extends React.Component {
             </div>
             <div className="col-1-of-2 login-page_content-right">
               <img
-                src="img/login.png"
+                src="img/forgot.png"
                 alt="login"
                 className="login-page_content-right_img u-margin-bottom-medium"
               />

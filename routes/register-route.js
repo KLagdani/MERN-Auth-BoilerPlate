@@ -202,7 +202,7 @@ router.post("/init-reset", async (req, res) => {
     return res.status(400).send({ errors: errorObj });
   }
 
-  return res.json({ token: "Valid token", email: user.email });
+  return res.json({ token: true, email: user.email });
 });
 
 // @route   POST api/register/reset

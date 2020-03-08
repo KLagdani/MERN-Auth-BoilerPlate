@@ -45,7 +45,7 @@ sendResetPasswordLink = user => {
     subject: "Reset Password",
     text: `
     To reset your password follow this link
-    ${`${process.env.NODEMAILER_HOST}/reset/${user.resetJWT}`}
+    ${`${process.env.NODEMAILER_HOST}/reset-pass/${user.resetJWT}`}
     `
   };
 

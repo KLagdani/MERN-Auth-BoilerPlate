@@ -8,7 +8,9 @@ import {
   USER_CONFIRMED,
   CHECK_USER_CONFIRMATION,
   NEW_CONFRIMATION_MAIL,
-  SEND_RESET_LINK
+  SEND_RESET_LINK,
+  CHECK_RESET_TOKEN,
+  RESET_PASSWORD
 } from "./types";
 
 // Register User
@@ -96,8 +98,49 @@ export const sendReset = userData => dispatch => {
     .post("/api/register/forgot", userData)
     .then(res => {
       dispatch({
+        type: CLEAR_ERRORS
+      });
+      dispatch({
         type: SEND_RESET_LINK,
         payload: res.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
+//Check if reset token is valid
+export const checkReset = token => dispatch => {
+  axios
+    .post("/api/register/init-reset", token)
+    .then(res => {
+      dispatch({
+        type: CHECK_RESET_TOKEN,
+        payload: res.data
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
+//Reset password
+export const resetPassword = userData => dispatch => {
+  axios
+    .post("/api/register/reset", userData)
+    .then(res => {
+      dispatch({
+        type: CLEAR_ERRORS
+      });
+      dispatch({
+        type: RESET_PASSWORD
       });
     })
     .catch(err => {

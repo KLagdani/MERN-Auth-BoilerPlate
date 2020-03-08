@@ -3,7 +3,9 @@ import {
   USER_CONFIRMED,
   CHECK_USER_CONFIRMATION,
   NEW_CONFRIMATION_MAIL,
-  SEND_RESET_LINK
+  SEND_RESET_LINK,
+  CHECK_RESET_TOKEN,
+  RESET_PASSWORD
 } from "../actions/types";
 
 const initialState = {
@@ -15,9 +17,9 @@ const initialState = {
   },
   reset: {
     isResetTokenValid: false,
-    resetSuccess: false,
     email: "",
-    emailSent: false
+    emailSent: false,
+    resetSuccess: false
   }
 };
 
@@ -74,6 +76,23 @@ export default (state = initialState, action) => {
           ...state.reset,
           emailSent: action.payload.emailSent,
           email: action.payload.user.email
+        }
+      };
+    case CHECK_RESET_TOKEN:
+      return {
+        ...state,
+        reset: {
+          ...state.reset,
+          isResetTokenValid: action.payload.token,
+          email: action.payload.email
+        }
+      };
+    case RESET_PASSWORD:
+      return {
+        ...state,
+        reset: {
+          ...state.reset,
+          resetSuccess: true
         }
       };
     default:

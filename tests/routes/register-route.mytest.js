@@ -315,7 +315,7 @@ describe("api/register", () => {
         .send({ token: alreadyExistUserResetJWT })
         .end((err, res) => {
           res.should.have.status(200);
-          expect(res.body.token).to.equal("Valid token");
+          expect(res.body.token).to.equal(true);
           expect(res.body.email).to.be.a("string");
           done();
         });
