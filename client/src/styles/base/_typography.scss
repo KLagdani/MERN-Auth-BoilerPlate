@@ -67,12 +67,11 @@ body {
   &,
   &:link,
   &:visited {
-    color: $basic-white;
     text-decoration: none;
     padding: 0 1rem 0.3rem 1rem;
-    border-bottom: 1px solid $basic-white;
     transition: all 0.2s;
   }
+
   &:hover {
     box-shadow: 0 1rem 2rem rgba($basic-black, 0.1);
     border-bottom: 1px solid $main-color-light;
@@ -83,5 +82,32 @@ body {
     box-shadow: 0 2rem 1rem rgba($basic-black, 0.1);
     outline: none;
     border-bottom: 1px solid $main-color;
+  }
+
+  &-white {
+    &,
+    &:link,
+    &:visited {
+      color: $basic-white;
+      border-bottom: 1px solid $basic-white;
+    }
+  }
+  &-black {
+    &,
+    &:link,
+    &:visited {
+      color: $basic-grey;
+      border-bottom: 1px solid $basic-grey;
+    }
+  }
+
+  &-smol {
+    &,
+    &:link,
+    &:visited {
+      color: $basic-grey-third;
+      border: none;
+      font-style: italic;
+    }
   }
 }

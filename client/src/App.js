@@ -14,6 +14,7 @@ import Register from "./components/user/Register";
 import Login from "./components/user/Login";
 import Dashboard from "./components/Dashboard/Dashboard";
 import Confirm from "./components/user/Confirm";
+import ForgotPassword from "./components/user/ForgotPassword";
 
 //Check for token
 if (localStorage.jwtToken) {
@@ -39,6 +40,7 @@ function App() {
             <Route exact path="/login" component={Login} />
             <Route exact path="/dashboard" component={Dashboard} />
             <Route exact path="/confirmation/:token" component={Confirm} />
+            <Route exact path="/forgot-pass" component={ForgotPassword} />
           </div>
         </Router>
       </div>

@@ -2,7 +2,8 @@ import {
   USER_REGISTERED_FOR_CONFIRMATION,
   USER_CONFIRMED,
   CHECK_USER_CONFIRMATION,
-  NEW_CONFRIMATION_MAIL
+  NEW_CONFRIMATION_MAIL,
+  SEND_RESET_LINK
 } from "../actions/types";
 
 const initialState = {
@@ -13,10 +14,10 @@ const initialState = {
     isConfirmed: false
   },
   reset: {
-    loadingReset: true,
     isResetTokenValid: false,
     resetSuccess: false,
-    email: ""
+    email: "",
+    emailSent: false
   }
 };
 
@@ -64,6 +65,15 @@ export default (state = initialState, action) => {
         confirmation: {
           ...state.confirmation,
           isConfirmed: action.payload.isConfirmed
+        }
+      };
+    case SEND_RESET_LINK:
+      return {
+        ...state,
+        reset: {
+          ...state.reset,
+          emailSent: action.payload.emailSent,
+          email: action.payload.user.email
         }
       };
     default:

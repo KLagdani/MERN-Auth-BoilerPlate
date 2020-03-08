@@ -4,53 +4,27 @@ import TextField from "../common/TextField";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { loginUser } from "../../actions/authActions";
-import { isConfirmed, sendConfirmation } from "../../actions/registerAction";
+import { sendReset } from "../../actions/registerAction";
 import { Alert } from "reactstrap";
-import isEmpty from "../../utils/isEmpty";
 
-class Login extends React.Component {
+class ForgotPassword extends React.Component {
   constructor() {
     super();
     this.state = {
       email: "",
       password: "",
       errors: {},
-      loading: false,
-      alert: {
-        alertVisible: false,
-        alertMessage: ""
-      },
       info: {
         infoVisible: false,
         infoMessage: ""
       },
-      confirmationLoading: false
+      loading: false
     };
 
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
-    this.closeAlert = this.closeAlert.bind(this);
-    this.openAlert = this.openAlert.bind(this);
     this.closeInfo = this.closeInfo.bind(this);
     this.openInfo = this.openInfo.bind(this);
-  }
-
-  closeAlert() {
-    this.setState({
-      alert: {
-        alertVisible: false,
-        alertMessage: ""
-      }
-    });
-  }
-
-  openAlert(message) {
-    this.setState({
-      alert: {
-        alertVisible: true,
-        alertMessage: message
-      }
-    });
   }
 
   closeInfo() {
@@ -80,78 +54,21 @@ class Login extends React.Component {
     if (nextProps.auth.isAuthenticated) {
       this.props.history.push("/dashboard");
     }
-
-    if (!isEmpty(nextProps.errors)) {
-      this.setState({
-        errors: nextProps.errors,
-        loading: false,
-        confirmationLoading: false
-      });
-      this.closeAlert();
-      this.closeInfo();
-    }
-
-    if (isEmpty(nextProps.errors)) {
-      this.setState({
-        errors: {}
-      });
-    }
-
-    if (
-      nextProps.register.confirmation.isConfirmed &&
-      isEmpty(nextProps.errors)
-    ) {
-      this.setState({
-        loading: true
-      });
-
-      const userData = {
-        email: this.state.email,
-        password: this.state.password
-      };
-
-      return this.props.loginUser(userData);
-    }
-
-    if (this.props.register.confirmation.newEmailSent) {
-      this.openInfo(
-        "We just sent you a new validation email, please confirm and refresh the page to login."
-      );
-    }
-
-    if (
-      !nextProps.register.confirmation.isConfirmed &&
-      isEmpty(nextProps.errors)
-    ) {
-      this.openAlert(`Your email is not yet verified.`);
-    }
-
-    if (nextProps.register.confirmation.newEmailSent) {
-      this.setState({
-        confirmationLoading: false
-      });
-      this.openInfo(
-        "We just sent you a new validation email, please confirm and refresh the page to login."
-      );
-      this.closeAlert();
+    if (nextProps.register.reset.emailSent) {
+      this.setState({ loading: false });
+      this.openInfo(`Reset email sent to: ${nextProps.register.reset.email}`);
     }
   }
 
   onChange(e) {
     this.setState({ [e.target.name]: e.target.value });
-    this.closeAlert();
-  }
-
-  sendConfirmation(e) {
-    e.preventDefault();
-    this.setState({ confirmationLoading: true });
-    this.closeAlert();
-    this.props.sendConfirmation({ email: this.state.email });
+    this.closeInfo();
   }
 
   onSubmit(e) {
     e.preventDefault();
-    this.props.isConfirmed({ email: this.state.email });
+    this.setState({ loading: true });
+    this.props.sendReset({ email: this.state.email });
   }
   render() {
     const { errors } = this.state;
@@ -169,14 +86,7 @@ class Login extends React.Component {
                 <h1 className="heading-first heading-first--sub u-margin-bottom-big">
                   Welcome to boiler plate
                 </h1>
-                <Alert
-                  color="danger"
-                  isOpen={this.state.alert.alertVisible}
-                  toggle={this.closeAlert}
-                  className="u-margin-bottom-small"
-                >
-                  {this.state.alert.alertMessage}
-                </Alert>
+
                 <Alert
                   color="success"
                   isOpen={this.state.info.infoVisible}
@@ -185,27 +95,7 @@ class Login extends React.Component {
                 >
                   {this.state.info.infoMessage}
                 </Alert>
-                {this.state.alert.alertVisible && (
-                  <div className="login-page_content-left_new-link">
-                    <Link
-                      to="/login"
-                      className="login-page_content_btn__link"
-                      onClick={this.sendConfirmation.bind(this)}
-                    >
-                      Send new validation link
-                    </Link>
-                  </div>
-                )}
-                {this.state.confirmationLoading && (
-                  <div className="u-margin-bottom-small">
-                    <div className="lds-ellipsis">
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                      <div></div>
-                    </div>
-                  </div>
-                )}
+
                 <form
                   className="login-page_content-left_form-content form"
                   onSubmit={this.onSubmit}
@@ -220,22 +110,13 @@ class Login extends React.Component {
                       error={errors.errors && errors.errors.email}
                       iconning="fas fa-envelope floaty-icon"
                     />
-                    <TextField
-                      placeholder="Password"
-                      name="password"
-                      type="password"
-                      value={this.state.password}
-                      onChange={this.onChange}
-                      error={errors.errors && errors.errors.password}
-                      iconning="fas fa-lock floaty-icon"
-                    />
                   </div>
                   {!this.state.loading && (
                     <button
                       type="submit"
                       className="form__btn u-margin-top-medium"
                     >
-                      <i class="fas fa-sign-in-alt"></i> &nbsp; Login
+                      <i class="far fa-paper-plane"></i> &nbsp; Send reset link
                     </button>
                   )}
 
@@ -249,15 +130,6 @@ class Login extends React.Component {
                       </div>
                     </div>
                   )}
-
-                  <div className="login-page_content-left_text-btn u-margin-top-small">
-                    <Link
-                      to="/forgot-pass"
-                      className="btn__link btn__link-smol"
-                    >
-                      forgot your password ?
-                    </Link>
-                  </div>
                 </form>
               </div>
             </div>
@@ -269,14 +141,14 @@ class Login extends React.Component {
               />
               <div className="u-center-text login-page_content-right_text">
                 <h2 className="heading-third login-page_content-right_text-title u-margin-bottom-small">
-                  Login
+                  Forgot your password ?
                 </h2>
                 <p className="paragraph u-center-text login-page_content-right_text-p">
-                  Hello, glad you're here :)
+                  We'll send you instructions to reset yout password.
                 </p>
                 <div className="login-page_content-right_text-btn u-margin-top-small">
                   <Link to="/" className="btn__link btn__link-white">
-                    Don't have an account ?
+                    Login
                   </Link>
                 </div>
               </div>
@@ -299,10 +171,9 @@ class Login extends React.Component {
   }
 }
 
-Login.propTypes = {
+ForgotPassword.propTypes = {
   loginUser: PropTypes.func.isRequired,
-  isConfirmed: PropTypes.func.isRequired,
-  sendConfirmation: PropTypes.func.isRequired,
+  sendReset: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   register: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
@@ -316,5 +187,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { loginUser, isConfirmed, sendConfirmation }
-)(Login);
+  { loginUser, sendReset }
+)(ForgotPassword);

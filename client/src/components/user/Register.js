@@ -121,7 +121,7 @@ class Register extends React.Component {
                   Hello, glad you're here :)
                 </p>
                 <div className="register-page_content-left_text-btn u-margin-top-small">
-                  <Link to="/login" className="btn__link">
+                  <Link to="/login" className="btn__link btn__link-white">
                     Already got an account ?
                   </Link>
                 </div>

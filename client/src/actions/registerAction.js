@@ -7,7 +7,8 @@ import {
   USER_REGISTERED_FOR_CONFIRMATION,
   USER_CONFIRMED,
   CHECK_USER_CONFIRMATION,
-  NEW_CONFRIMATION_MAIL
+  NEW_CONFRIMATION_MAIL,
+  SEND_RESET_LINK
 } from "./types";
 
 // Register User
@@ -79,6 +80,24 @@ export const confirmUser = token => dispatch => {
       dispatch({
         type: USER_CONFIRMED,
         payload: decoded
+      });
+    })
+    .catch(err => {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err.response.data
+      });
+    });
+};
+
+//Send reset link for forgotten password
+export const sendReset = userData => dispatch => {
+  axios
+    .post("/api/register/forgot", userData)
+    .then(res => {
+      dispatch({
+        type: SEND_RESET_LINK,
+        payload: res.data
       });
     })
     .catch(err => {
